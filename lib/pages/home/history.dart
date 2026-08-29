@@ -1,4 +1,6 @@
+import 'package:adnc/services/attendance.dart';
 import 'package:adnc/statics/colors.dart';
+import 'package:adnc/utiles/formats.dart';
 import 'package:flutter/material.dart';
 
 class HomeHistory extends StatefulWidget {
@@ -10,6 +12,53 @@ class HomeHistory extends StatefulWidget {
 
 class _HomeHistoryState extends State<HomeHistory> {
   String _selectedCal = "day";
+  List<Map<String, dynamic>> _data = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadHistory();
+  }
+
+  Future<void> _loadHistory() async {
+    try {
+      final response = await AttendanceService().getAllAttendance();
+      final rawData = response['data'] ?? response['result'] ?? [];
+
+      if (!mounted) return;
+
+      setState(() {
+        _data = (rawData is List)
+            ? rawData
+                  .whereType<Map>()
+                  .map((entry) => Map<String, dynamic>.from(entry))
+                  .toList()
+            : [];
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _data = [];
+      });
+    }
+  }
+
+  String _getDateText(Map<String, dynamic> item) {
+    final value = item['date'];
+    return value == null ? 'Unknown date' : value.toString();
+  }
+
+  String _getInText(Map<String, dynamic> item) {
+    final value = item['checkInTime'];
+    return value == null || value.toString().isEmpty ? 'In --:--' : 'In $value';
+  }
+
+  String _getOutText(Map<String, dynamic> item) {
+    final value = item['checkOutTime'];
+    return value == null || value.toString().isEmpty
+        ? 'Out --:--'
+        : 'Out $value';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,32 +181,60 @@ class _HomeHistoryState extends State<HomeHistory> {
         Expanded(
           child: ListView(
             padding: EdgeInsets.symmetric(horizontal: 20),
-            children: [
-              for (int i = 0; i < 10; i++)
-                Container(
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    border: Border(bottom: BorderSide(color: borderColor)),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      SizedBox(
-                        width: size.width * .5 - 26,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+            children: _data.isEmpty
+                ? [
+                    Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Center(
+                        child: Text(
+                          'No history found',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: secondaryTextColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ]
+                : [
+                    for (final item in _data)
+                      Container(
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(color: borderColor),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text(
-                              '27 June 2026',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: textColor,
-                                fontWeight: FontWeight.bold,
+                            SizedBox(
+                              width: size.width * .5 - 26,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    formattedDate(DateTime.parse(item["date"] ?? "")),
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: textColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    item["checkInTime"] ?? "",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: textColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             Text(
-                              'In 08:10 AM',
+                              item["checkOutTime"] ?? "",
                               style: TextStyle(
                                 fontSize: 14,
                                 color: textColor,
@@ -167,18 +244,7 @@ class _HomeHistoryState extends State<HomeHistory> {
                           ],
                         ),
                       ),
-                      Text(
-                        'Out 08:10 PM',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: textColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-            ],
+                  ],
           ),
         ),
       ],

@@ -1,11 +1,18 @@
 import 'package:adnc/statics/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeMore extends StatelessWidget {
   const HomeMore({super.key});
 
   @override
   Widget build(BuildContext context) {
+    void onOut() async {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('accessToken');
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+    }
+
     return ListView(
       padding: EdgeInsets.symmetric(horizontal: 24),
       children: [
@@ -34,7 +41,11 @@ class HomeMore extends StatelessWidget {
                   ),
                 ],
               ),
-              Icon(Icons.arrow_forward_ios, color: secondaryTextColor, size: 18),
+              Icon(
+                Icons.arrow_forward_ios,
+                color: secondaryTextColor,
+                size: 18,
+              ),
             ],
           ),
         ),
@@ -63,7 +74,11 @@ class HomeMore extends StatelessWidget {
                   ),
                 ],
               ),
-              Icon(Icons.arrow_forward_ios, color: secondaryTextColor, size: 18),
+              Icon(
+                Icons.arrow_forward_ios,
+                color: secondaryTextColor,
+                size: 18,
+              ),
             ],
           ),
         ),
@@ -92,7 +107,11 @@ class HomeMore extends StatelessWidget {
                   ),
                 ],
               ),
-              Icon(Icons.arrow_forward_ios, color: secondaryTextColor, size: 18),
+              Icon(
+                Icons.arrow_forward_ios,
+                color: secondaryTextColor,
+                size: 18,
+              ),
             ],
           ),
         ),
@@ -121,7 +140,11 @@ class HomeMore extends StatelessWidget {
                   ),
                 ],
               ),
-              Icon(Icons.arrow_forward_ios, color: secondaryTextColor, size: 18),
+              Icon(
+                Icons.arrow_forward_ios,
+                color: secondaryTextColor,
+                size: 18,
+              ),
             ],
           ),
         ),
@@ -150,36 +173,47 @@ class HomeMore extends StatelessWidget {
                   ),
                 ],
               ),
-              Icon(Icons.arrow_forward_ios, color: secondaryTextColor, size: 18),
+              Icon(
+                Icons.arrow_forward_ios,
+                color: secondaryTextColor,
+                size: 18,
+              ),
             ],
           ),
         ),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 18),
-          decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: borderColor)),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(Icons.logout, color: warningRed, size: 22),
-                  SizedBox(width: 16),
-                  Text(
-                    'Logout',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: warningRed,
-                      fontWeight: FontWeight.bold,
+        GestureDetector(
+          onTap: () => onOut(),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 18),
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: borderColor)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(Icons.logout, color: warningRed, size: 22),
+                    SizedBox(width: 16),
+                    Text(
+                      'Logout',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: warningRed,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              Icon(Icons.arrow_forward_ios, color: secondaryTextColor, size: 18),
-            ],
+                  ],
+                ),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  color: secondaryTextColor,
+                  size: 18,
+                ),
+              ],
+            ),
           ),
         ),
       ],

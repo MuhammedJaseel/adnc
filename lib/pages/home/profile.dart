@@ -1,4 +1,5 @@
 import 'package:adnc/statics/colors.dart';
+import 'package:adnc/utiles/user.dart';
 import 'package:flutter/material.dart';
 
 class HomeProfile extends StatelessWidget {
@@ -39,7 +40,7 @@ class HomeProfile extends StatelessWidget {
                 ),
               ),
               Text(
-                'E00001',
+                '',
                 style: TextStyle(
                   fontSize: 16,
                   color: textColor,
@@ -67,7 +68,7 @@ class HomeProfile extends StatelessWidget {
                 ),
               ),
               Text(
-                'John Doe',
+                User.employee["fullName"] ?? "",
                 style: TextStyle(
                   fontSize: 16,
                   color: textColor,
@@ -95,7 +96,7 @@ class HomeProfile extends StatelessWidget {
                 ),
               ),
               Text(
-                'Technical',
+                '',
                 style: TextStyle(
                   fontSize: 16,
                   color: textColor,
@@ -123,7 +124,7 @@ class HomeProfile extends StatelessWidget {
                 ),
               ),
               Text(
-                'Technician',
+                User.employee["position"] ?? "",
                 style: TextStyle(
                   fontSize: 16,
                   color: textColor,
@@ -151,7 +152,7 @@ class HomeProfile extends StatelessWidget {
                 ),
               ),
               Text(
-                '+91 12345 54322',
+                User.employee["phoneNumber"] ?? "",
                 style: TextStyle(
                   fontSize: 16,
                   color: textColor,
@@ -179,7 +180,7 @@ class HomeProfile extends StatelessWidget {
                 ),
               ),
               Text(
-                'johndeo@appcare.com',
+                User.employee["email"] ?? "",
                 style: TextStyle(
                   fontSize: 16,
                   color: textColor,

@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'package:adnc/services/account.dart';
+import 'package:adnc/services/http.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({Key? key}) : super(key: key);
@@ -9,12 +12,30 @@ class LandingPage extends StatefulWidget {
 }
 
 class _LandingPageState extends State<LandingPage> {
+  final _accountService = AccountService();
+
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 1), () {
+
+    Timer(const Duration(seconds: 1), () async {
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, '/login');
+      final prefs = await SharedPreferences.getInstance();
+      final accessToken = prefs.getString('accessToken');
+      if (!mounted) return;
+      if (accessToken != null && accessToken.isNotEmpty) {
+        HttpsService.accessToken = accessToken;
+        await _accountService.getProfile();
+        // TODO: Manage error
+        if (!mounted) return;
+        Navigator.pushNamedAndRemoveUntil(context, '/home', ((route) => false));
+      } else {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/login',
+          ((route) => false),
+        );
+      }
     });
   }
 

@@ -1,12 +1,66 @@
+import 'package:adnc/services/account.dart';
+import 'package:adnc/services/http.dart';
 import 'package:adnc/statics/colors.dart';
+import 'package:adnc/utiles/formats.dart';
+import 'package:adnc/utiles/user.dart';
 import 'package:flutter/material.dart';
+import 'dart:async';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({super.key});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  final _accountService = AccountService();
+  late Timer _timer;
+  DateTime _now = DateTime.now();
+  dynamic dashboard;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() => _now = DateTime.now());
+    });
+
+    initDashboard();
+  }
+
+  void initDashboard() async {
+    try {
+      dynamic res = await _accountService.getDashboard();
+      if (res != null) {
+        setState(() {
+          dashboard = res;
+        });
+      }
+    } catch (e) {}
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  String getGreeting(DateTime now) {
+    final hour = now.hour;
+    if (hour >= 5 && hour < 12) {
+      return 'Good Morning';
+    } else if (hour >= 12 && hour < 17) {
+      return 'Good Afternoon';
+    } else {
+      return 'Good Evening';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+
     return ListView(
       padding: EdgeInsets.all(28),
       children: [
@@ -17,14 +71,14 @@ class Home extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Good Morning",
+                  getGreeting(_now),
                   style: TextStyle(
                     color: secondaryTextColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 Text(
-                  "John Doe",
+                  User.employee['fullName'] ?? '',
                   style: TextStyle(
                     color: textColor,
                     fontWeight: FontWeight.bold,
@@ -32,7 +86,7 @@ class Home extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "EMP001",
+                  User.employee['email'] ?? '',
                   style: TextStyle(
                     color: textColor,
                     fontWeight: FontWeight.w600,
@@ -48,7 +102,27 @@ class Home extends StatelessWidget {
                 color: secondaryColor,
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.person_outline, color: Colors.white, size: 42),
+              child: ClipOval(
+                child:
+                    (User.employee['photoUrl'] != null &&
+                        (User.employee['photoUrl'] as String).isNotEmpty)
+                    ? Image.network(
+                        HttpsService.imageBaseUrl +
+                            (User.employee['photoUrl'] ?? ""),
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: secondaryColor,
+                          child: Icon(
+                            Icons.person_outline,
+                            color: Colors.white,
+                            size: 42,
+                          ),
+                        ),
+                      )
+                    : Icon(Icons.person_outline, color: Colors.white, size: 42),
+              ),
             ),
           ],
         ),
@@ -69,7 +143,7 @@ class Home extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Friday, 27 June 2028',
+                    formattedDate(_now),
                     style: TextStyle(
                       color: secondaryTextColor,
                       fontSize: 16,
@@ -80,7 +154,7 @@ class Home extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        '09:15',
+                        '${_now.hour.toString().padLeft(2, '0')}:${_now.minute.toString().padLeft(2, '0')}',
                         style: TextStyle(
                           color: textColor,
                           fontSize: 28,
@@ -89,7 +163,7 @@ class Home extends StatelessWidget {
                       ),
                       SizedBox(width: 6),
                       Text(
-                        'AM',
+                        _now.hour >= 12 ? 'PM' : 'AM',
                         style: TextStyle(
                           color: textColor,
                           fontSize: 22,
@@ -117,79 +191,89 @@ class Home extends StatelessWidget {
           ),
         ),
         SizedBox(height: 20),
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: secondaryColor,
+        if (dashboard?['checkInTime'] == null)
+          InkWell(
+            onTap: () => Navigator.pushNamed(context, '/punch-in'),
             borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: secondaryColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
                 children: [
-                  Icon(Icons.camera_alt, color: Colors.white, size: 28),
-                  SizedBox(width: 6),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.camera_alt, color: Colors.white, size: 28),
+                      SizedBox(width: 6),
+                      Text(
+                        "PUNCH IN",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 6),
                   Text(
-                    "PUNCH IN",
+                    "Not marked yet",
                     style: TextStyle(
                       color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18,
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 6),
-              Text(
-                "Not marked yet",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18,
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
         SizedBox(height: 20),
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: primaryColor,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+        if (dashboard?['checkInTime'] != null &&
+            dashboard?['checkOutTime'] == null)
+          InkWell(
+            onTap: () => Navigator.pushNamed(context, '/punch-out'),
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: primaryColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
                 children: [
-                  Icon(Icons.camera_alt, color: Colors.white, size: 28),
-                  SizedBox(width: 6),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.camera_alt, color: Colors.white, size: 28),
+                      SizedBox(width: 6),
+                      Text(
+                        "PUNCH OUT",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 6),
                   Text(
-                    "PUNCH OUT",
+                    "Not marked yet",
                     style: TextStyle(
                       color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18,
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 6),
-              Text(
-                "Not marked yet",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18,
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
         SizedBox(height: 26),
         Text(
           "Today's Attendance",
@@ -232,7 +316,7 @@ class Home extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "--",
+                      dashboard?['checkInTime'] ?? "--",
                       style: TextStyle(
                         color: textColor,
                         fontSize: 16,
@@ -248,7 +332,7 @@ class Home extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Punch In",
+                      "Punch Out",
                       style: TextStyle(
                         color: textColor,
                         fontSize: 16,
@@ -256,7 +340,7 @@ class Home extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "--",
+                      dashboard?['checkOutTime'] ?? "--",
                       style: TextStyle(
                         color: textColor,
                         fontSize: 16,
