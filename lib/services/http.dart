@@ -10,6 +10,7 @@ class HttpsService {
   static const String authority = 'qorfin-api.anolabs.site';
 
   static Uri makeUri(String path) {
+    // return Uri.http(HttpsService.authority, path);
     return Uri.https(HttpsService.authority, path);
   }
 

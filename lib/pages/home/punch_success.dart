@@ -1,3 +1,4 @@
+import 'package:adnc/pages/home/punch_in_out.dart';
 import 'package:adnc/statics/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -6,9 +7,9 @@ class PunchSuccessPage extends StatelessWidget {
     super.key,
     this.location = '',
     this.battery = '',
-    this.internet = '',
+    this.network = '',
     this.device = '',
-    this.type = '',
+    this.type = PunchType.punchIn,
     this.punchTime = '',
     this.punchDate = '',
     this.punchDay = '',
@@ -16,9 +17,9 @@ class PunchSuccessPage extends StatelessWidget {
 
   final String location;
   final String battery;
-  final String internet;
+  final String network;
   final String device;
-  final String type;
+  final PunchType type;
   final String punchTime;
   final String punchDate;
   final String punchDay;
@@ -43,7 +44,7 @@ class PunchSuccessPage extends StatelessWidget {
           children: [
             // Top Green Background Header
             Container(
-              height: 320,
+              height: 300,
               width: double.infinity,
               color: primaryGreen,
               child: SafeArea(
@@ -53,8 +54,8 @@ class PunchSuccessPage extends StatelessWidget {
                     const SizedBox(height: 12),
                     // Checkmark Circle Icon
                     Container(
-                      width: 64,
-                      height: 64,
+                      width: 56,
+                      height: 56,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(color: Colors.white, width: 4),
@@ -62,28 +63,28 @@ class PunchSuccessPage extends StatelessWidget {
                       child: const Icon(
                         Icons.check_rounded,
                         color: Colors.white,
-                        size: 36,
+                        size: 32,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 10),
                     Text(
-                      '$type Successful',
+                      '${type == PunchType.punchIn ? 'Punch In' : 'Punch Out'} Successful',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 22,
+                        fontSize: 20,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     Text(
                       punchTime,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 32,
+                        fontSize: 30,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       '$punchDate, $punchDay',
                       style: const TextStyle(
@@ -102,7 +103,7 @@ class PunchSuccessPage extends StatelessWidget {
               child: Column(
                 children: [
                   const SizedBox(
-                    height: 280,
+                    height: 220,
                   ), // Offset to overlap top green header
                   Expanded(
                     child: Padding(
@@ -134,7 +135,7 @@ class PunchSuccessPage extends StatelessWidget {
                                     color: textColor,
                                   ),
                                 ),
-                                const SizedBox(height: 16),
+                                const SizedBox(height: 12),
                                 _buildDetailRow(
                                   icon: Icons.location_on_outlined,
                                   title: 'Location',
@@ -156,7 +157,7 @@ class PunchSuccessPage extends StatelessWidget {
                                   ),
                                 ),
                                 const Divider(
-                                  height: 24,
+                                  height: 18,
                                   color: Color(0xFFF1F5F9),
                                 ),
                                 _buildDetailRow(
@@ -167,7 +168,7 @@ class PunchSuccessPage extends StatelessWidget {
                                 _buildDetailRow(
                                   icon: Icons.wifi,
                                   title: 'Internet',
-                                  trailingText: internet,
+                                  trailingText: network,
                                 ),
                                 _buildDetailRow(
                                   icon: Icons.smartphone,
@@ -181,7 +182,9 @@ class PunchSuccessPage extends StatelessWidget {
                                 _buildDetailRow(
                                   icon: Icons.badge_outlined,
                                   title: 'Type',
-                                  subtitle: type,
+                                  subtitle: type == PunchType.punchIn
+                                      ? 'Punch In'
+                                      : 'Punch Out',
                                 ),
                               ],
                             ),
@@ -233,8 +236,8 @@ class PunchSuccessPage extends StatelessWidget {
     String? trailingText,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      height: 58,
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      height: 56,
       child: Row(
         children: [
           Icon(icon, size: 24, color: textColor),
@@ -252,8 +255,7 @@ class PunchSuccessPage extends StatelessWidget {
                     color: textColor,
                   ),
                 ),
-                if (subtitle != null) ...[
-                  const SizedBox(height: 2),
+                if (subtitle != null)
                   Text(
                     subtitle,
                     style: TextStyle(
@@ -266,7 +268,6 @@ class PunchSuccessPage extends StatelessWidget {
                           : const Color(0xFF64748B),
                     ),
                   ),
-                ],
               ],
             ),
           ),

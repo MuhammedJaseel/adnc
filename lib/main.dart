@@ -1,6 +1,5 @@
 import 'package:adnc/pages/home/index.dart';
-import 'package:adnc/pages/home/punch_in.dart';
-import 'package:adnc/pages/home/punch_out.dart';
+import 'package:adnc/pages/home/punch_in_out.dart';
 import 'package:adnc/pages/home/punch_success.dart';
 import 'package:adnc/pages/landing.dart';
 import 'package:adnc/pages/login.dart';
@@ -24,8 +23,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => const LandingPage(),
         '/login': (context) => const LoginPage(),
         '/home': (context) => const HomePage(),
-        '/punch-in': (context) => const PunchInPage(),
-        '/punch-out': (context) => const PunchOutPage(),
+        '/punch-in-out': (context) => const PunchInOutPage(),
         '/punch-success': (context) => const PunchSuccessPage(),
       },
       title: 'App Care',

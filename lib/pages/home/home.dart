@@ -1,3 +1,5 @@
+import 'package:adnc/pages/home/punch_in_out.dart';
+import 'package:adnc/pages/home/verify.dart';
 import 'package:adnc/services/account.dart';
 import 'package:adnc/services/http.dart';
 import 'package:adnc/statics/colors.dart';
@@ -191,9 +193,61 @@ class _HomeState extends State<Home> {
           ),
         ),
         SizedBox(height: 20),
-        if (dashboard?['checkInTime'] == null)
+        if (!((User.employee?['isSelfieVerified'] ?? false)))
           InkWell(
-            onTap: () => Navigator.pushNamed(context, '/punch-in'),
+            onTap: () => Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => VerifyPage())),
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: secondaryColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.security_outlined,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                      SizedBox(width: 6),
+                      Text(
+                        "Upload Photo",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 6),
+                  Text(
+                    "Verify your identity",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        if ((User.employee?['isSelfieVerified'] ?? false) &&
+            dashboard?['checkInTime'] == null)
+          InkWell(
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => PunchInOutPage(type: PunchType.punchIn),
+              ),
+            ),
             borderRadius: BorderRadius.circular(12),
             child: Container(
               width: double.infinity,
@@ -232,11 +286,16 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
-        SizedBox(height: 20),
-        if (dashboard?['checkInTime'] != null &&
+        // SizedBox(height: 20),
+        if ((User.employee?['isSelfieVerified'] ?? false) &&
+            dashboard?['checkInTime'] != null &&
             dashboard?['checkOutTime'] == null)
           InkWell(
-            onTap: () => Navigator.pushNamed(context, '/punch-out'),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => PunchInOutPage(type: PunchType.punchOut),
+              ),
+            ),
             child: Container(
               width: double.infinity,
               padding: EdgeInsets.all(16),
