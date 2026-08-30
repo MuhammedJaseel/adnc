@@ -254,6 +254,5 @@ class _VerifyPageState extends State<VerifyPage> {
         ],
       ),
     );
-    ;
   }
 }

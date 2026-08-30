@@ -43,23 +43,6 @@ class _HomeHistoryState extends State<HomeHistory> {
     }
   }
 
-  String _getDateText(Map<String, dynamic> item) {
-    final value = item['date'];
-    return value == null ? 'Unknown date' : value.toString();
-  }
-
-  String _getInText(Map<String, dynamic> item) {
-    final value = item['checkInTime'];
-    return value == null || value.toString().isEmpty ? 'In --:--' : 'In $value';
-  }
-
-  String _getOutText(Map<String, dynamic> item) {
-    final value = item['checkOutTime'];
-    return value == null || value.toString().isEmpty
-        ? 'Out --:--'
-        : 'Out $value';
-  }
-
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -215,7 +198,9 @@ class _HomeHistoryState extends State<HomeHistory> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    formattedDate(DateTime.parse(item["date"] ?? "")),
+                                    formattedDate(
+                                      DateTime.parse(item["date"] ?? ""),
+                                    ),
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: textColor,

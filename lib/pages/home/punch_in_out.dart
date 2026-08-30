@@ -77,7 +77,6 @@ class _PunchInOutPageState extends State<PunchInOutPage> {
           'inDevice': deviceModel,
         };
         dynamic res = await attendanceService.markPunchIn(body, image);
-        print(res);
         punchTime = res['checkInTime'];
         date = res['date'];
       } else {
@@ -88,7 +87,6 @@ class _PunchInOutPageState extends State<PunchInOutPage> {
           'outDevice': deviceModel,
         };
         dynamic res = await attendanceService.markPunchOut(body, image);
-        print(res);
         punchTime = res['checkOutTime'];
         date = res['date'];
       }
