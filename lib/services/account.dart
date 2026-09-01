@@ -1,11 +1,30 @@
+import 'dart:io';
+
 import 'package:adnc/services/http.dart';
 import 'package:adnc/utiles/user.dart';
 import 'package:camera/camera.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class AccountService {
-  // Centralized host and base headers
+  Future<String> _convertToWebP(XFile photo) async {
+    final tempDir = await Directory.systemTemp.createTemp('attendance-webp-');
+    final webPPath =
+        '${tempDir.path}/photo_${DateTime.now().millisecondsSinceEpoch}.webp';
+
+    final result = await FlutterImageCompress.compressAndGetFile(
+      photo.path,
+      webPPath,
+      format: CompressFormat.webp,
+      quality: 80,
+    );
+
+    if (result == null) {
+      throw Exception('Unable to convert image to WebP.');
+    }
+    return result.path;
+  }
 
   /// Fetches the profile details for the authenticated employee
   Future<Map<String, dynamic>> getProfile() async {
@@ -49,8 +68,8 @@ class AccountService {
     request.files.add(
       await http.MultipartFile.fromPath(
         'photo',
-        photo.path,
-        contentType: MediaType('image', 'jpeg'),
+        await _convertToWebP(photo),
+        contentType: MediaType('image', 'webp'),
       ),
     );
 
@@ -72,13 +91,15 @@ class AccountService {
     request.files.add(
       await http.MultipartFile.fromPath(
         'photo',
-        photo.path,
-        contentType: MediaType('image', 'jpeg'),
+        await _convertToWebP(photo),
+        contentType: MediaType('image', 'webp'),
       ),
     );
 
     final streamedResponse = await request.send();
     final response = await http.Response.fromStream(streamedResponse);
+
+    await getProfile();
 
     return HttpsService.parseResponse(response);
   }

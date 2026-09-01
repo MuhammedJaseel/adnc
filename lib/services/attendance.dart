@@ -1,11 +1,31 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:adnc/services/http.dart';
 import 'package:camera/camera.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class AttendanceService {
+  Future<String> _convertToWebP(XFile photo) async {
+    final tempDir = await Directory.systemTemp.createTemp('attendance-webp-');
+    final webPPath =
+        '${tempDir.path}/photo_${DateTime.now().millisecondsSinceEpoch}.webp';
+
+    final result = await FlutterImageCompress.compressAndGetFile(
+      photo.path,
+      webPPath,
+      format: CompressFormat.webp,
+      quality: 80,
+    );
+
+    if (result == null) {
+      throw Exception('Unable to convert image to WebP.');
+    }
+    return result.path;
+  }
+
   Future<Map<String, dynamic>> getAllAttendance() async {
     final url = HttpsService.makeUri('/employee/api/attendance');
 
@@ -33,11 +53,12 @@ class AttendanceService {
     });
 
     request.fields['data'] = jsonEncode(body);
+
     request.files.add(
       await http.MultipartFile.fromPath(
         'photo',
-        photo.path,
-        contentType: MediaType('image', 'jpeg'),
+        await _convertToWebP(photo),
+        contentType: MediaType('image', 'webp'),
       ),
     );
 
@@ -60,11 +81,12 @@ class AttendanceService {
     });
 
     request.fields['data'] = jsonEncode(body);
+
     request.files.add(
       await http.MultipartFile.fromPath(
         'photo',
-        photo.path,
-        contentType: MediaType('image', 'jpeg'),
+        await _convertToWebP(photo),
+        contentType: MediaType('image', 'webp'),
       ),
     );
 

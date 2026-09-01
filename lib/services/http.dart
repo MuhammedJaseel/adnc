@@ -4,8 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 
 class HttpsService {
-  // static const String imageBaseUrl = 'http://localhost:2700/storage/';
-  // static const String authority = 'localhost:2700';
+  // static const String imageBaseUrl = 'http://10.157.213.253:2700/storage/';
+  // static const String authority = '10.157.213.253:2700';
   static const String imageBaseUrl = 'https://qorfin-api.anolabs.site/storage/';
   static const String authority = 'qorfin-api.anolabs.site';
 
