@@ -375,7 +375,9 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                     Text(
-                      dashboard?['checkInTime'] ? convert24HT12H(dashboard!['checkInTime']) : "--",
+                      dashboard?['checkInTime'] != null
+                          ? convert24HT12H(dashboard!['checkInTime'])
+                          : "--",
                       style: TextStyle(
                         color: textColor,
                         fontSize: 16,
@@ -399,7 +401,9 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                     Text(
-                      dashboard?['checkOutTime'] ? convert24HT12H(dashboard!['checkOutTime']) : "--",
+                      dashboard?['checkOutTime'] != null
+                          ? convert24HT12H(dashboard!['checkOutTime'])
+                          : "--",
                       style: TextStyle(
                         color: textColor,
                         fontSize: 16,

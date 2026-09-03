@@ -208,7 +208,7 @@ class _HomeHistoryState extends State<HomeHistory> {
                                     ),
                                   ),
                                   Text(
-                                    item["checkInTime"] ? convert24HT12H(item["checkInTime"]) : "--",
+                                    convert24HT12H(item["checkInTime"]),
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: textColor,
@@ -219,7 +219,7 @@ class _HomeHistoryState extends State<HomeHistory> {
                               ),
                             ),
                             Text(
-                              item["checkOutTime"] ? convert24HT12H(item["checkOutTime"]) : "--",
+                              convert24HT12H(item["checkOutTime"]),
                               style: TextStyle(
                                 fontSize: 14,
                                 color: textColor,
